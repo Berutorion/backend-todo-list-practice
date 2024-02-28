@@ -5,19 +5,28 @@ const { v4 }  = require('uuid')
 
 const todoRouter = async(req,res,todoList) => {
     const method = req.method
+    const id = req.url.split('/').pop()
+    let data = {}
+    if(method === 'PATCH' || method === 'POST' ){
+         data = await getDataFromRequest(req)
+    }
 try{
     switch(method){
         case'GET': 
         getAll(res,todoList)
             break;
         case 'DELETE':
-        console.log('delete method')
+            if(id){
+                deleteById(res,todoList,id)
+            }else{
+                deleteAll(res,todoList)
+            }
             break;
         case 'PATCH':
-        console.log('patch method')
+            const todoData = getById(res,todoList,id)
+            updateTodo(res,todoData,data)
             break;
         case 'POST':
-            const data = await getDataFromRequest(req)
             createTodo(res,todoList,data)
             break;
         default:
@@ -28,18 +37,41 @@ try{
 }
 
 const getAll = (res,todoList) => {
-    console.log("GET", todoList)
     sendRes(res,200,todoList)
 }
 
+const getById = (res,todoList,id) => {
+    const index = todoList.findIndex(ele => ele.id === id)
+    if(index === -1) throw new HttpError('The data is not found.', 400)
+    return todoList[index]
+}
+
 const createTodo = (res,todoList,data) => {
-    if(!data.title) throw new HttpError('Input does not conform to the format',400)
+    if(!data.title) throw new HttpError('Input does not conform to the format.',400)
     const todo = {
         title:data.title,
         id : v4()
     }
     todoList.push(todo)
     sendRes(res,200,todo)
+}
+
+const updateTodo = (res,todoData,data) => {
+    if(!data.title) throw new HttpError('Input does not conform to the format.',400)
+   todoData.title = data.title
+   sendRes(res,200,todoData)
+}
+
+const deleteAll = (res,todoList) => {
+    todoList.length = 0
+    sendRes(res,200,'Success to delete all data.')
+}
+
+const deleteById = (res,todoList,id) => {
+    const index = todoList.findIndex(ele => ele.id === id)
+    if(index === -1) throw new HttpError('The data is not found.', 400)
+    const deletedData = todoList.splice(index,1)
+    sendRes(res,200,deletedData)
 }
 
 const getDataFromRequest = (req) => {
