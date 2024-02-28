@@ -1,4 +1,5 @@
 const http = require('http')
+const todoRouter = require('./todoRouter')
 
 const serverListener = (req,res) => {
 const headerConfig = {
@@ -9,26 +10,21 @@ const headerConfig = {
 }
 
 let data = ''
-
 req.on('data' , (chuck) => {
     data += chuck
 })
 
 req.on('end' , () => {
-    console.log(data)
+    req.body = JSON.parse(data)
 })
 
-if(req.url === '/' && req.method === 'GET'){
+if(req.url === '/'){
     res.writeHead(200,headerConfig)
     res.write('Welcome')
     res.end()
-}else if(req.url === '/' && req.method === 'DELETE'){
+}else if(req.url.startsWith('/todo',5)){
     res.writeHead(200,headerConfig)
-    res.write('Welcome')
-    res.end()
-}else if(req.method === 'OPTIONS' ){
-    res.writeHead(200,headerConfig)
-    res.end()
+    todoRouter(req,res)
 }else{
     res.writeHead(404,headerConfig)
     res.write('Can\'t find the page')
