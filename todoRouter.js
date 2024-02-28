@@ -1,9 +1,7 @@
 
-const { HttpError } = require('./Error')
+const { HttpError,errorHandler } = require('./Error')
 const sendRes = require('./sendRes')
 const { v4 }  = require('uuid')
-
-
 
 const todoRouter = async(req,res,todoList) => {
     const method = req.method
@@ -25,12 +23,7 @@ try{
         default:
     }
 }catch(e){
-    if(e.statusCode !== undefined){
-        sendRes(res,e.statusCode,e.message);
-    }else{
-        console.log(e)
-        sendRes(res,500,'It have some error, please try again .');
-    }
+    errorHandler(res,e)
     } 
 }
 

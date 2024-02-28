@@ -1,7 +1,7 @@
 const http = require('http')
 const todoRouter = require('./todoRouter')
 const sendRes = require('./sendRes')
-const {HttpError} = require('./Error')
+const {HttpError,errorHandler} = require('./Error')
 const todoList = [];
 
 const serverListener = (req,res) => {
@@ -15,12 +15,7 @@ try{
         throw new HttpError('Can\'t find page',404)
     }
 }catch(e) {
-    if(e.statusCode !== undefined){
-        sendRes(res,e.statusCode,e.message);
-    }else{
-        console.log(e.message)
-        sendRes(res,500,'It have some error, please try again .');
-    }
+    errorHandler(res,e)
     }
 }
 
