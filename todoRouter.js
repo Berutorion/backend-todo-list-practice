@@ -1,8 +1,15 @@
 
 
 const todoRouter = (req,res) => {
+    let data = ''
     const method = req.method
-    console.log(method)
+    req.on('data' , (chuck) => {
+        data += chuck
+    })
+
+    req.on('end' , () => {
+        data = JSON.parse(data)
+    })
     switch(method){
         case'GET': 
         console.log('get method')
