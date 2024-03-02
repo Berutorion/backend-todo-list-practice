@@ -5,7 +5,7 @@ const { v4 }  = require('uuid')
 
 const todoRouter = async(req,res,todoList) => {
     const method = req.method
-    const id = req.url.split('/').pop()
+    const id =  req.url.split('/').length < 3 ? "" : req.url.split('/').pop();
     let data = {}
     if(method === 'PATCH' || method === 'POST' ){
          data = await getDataFromRequest(req)
@@ -16,9 +16,11 @@ try{
         getAll(res,todoList)
             break;
         case 'DELETE':
-            if(id){
+            if(id !== ''){
+                console.log('delete by id',id)
                 deleteById(res,todoList,id)
             }else{
+                console.log('delete all')
                 deleteAll(res,todoList)
             }
             break;
