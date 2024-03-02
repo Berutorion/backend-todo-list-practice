@@ -32,6 +32,7 @@ try{
             createTodo(res,todoList,data)
             break;
         default:
+         throw new HttpError('It is not a valid request',400)
     }
 }catch(e){
     errorHandler(res,e)
